@@ -1,6 +1,9 @@
 package teste;
 
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 import static org.hamcrest.Matchers.*;
 
@@ -34,5 +37,18 @@ public class UserXMLTest {
                 .body("users.user.find{it.age == 25}.name", is("Maria Joaquina"))
                 .body("users.user.findAll{it.name.contains('n')}.name", hasItems("Maria Joaquina", "Ana Julia"))
                 .body("users.user.name.findAll{it.toString().startsWith('Maria')}.collect{it.toString().toUpperCase()}", is("MARIA JOAQUINA"));
+    }
+
+    @Test
+    public void devoFazerPesquisasAvançcdasComXMLEJava(){
+        ArrayList<String> nomes = given()
+                .when()
+                .get("https://restapi.wcaquino.me/usersXML")
+                .then()
+                .statusCode(200)
+                .extract().path("users.user.name.findAll{it.toString().contains('n')}");
+        Assert.assertEquals(2, nomes.size());
+        Assert.assertEquals("Maria Joaquina".toUpperCase(), nomes.get(0).toUpperCase());
+        Assert.assertTrue("ANA JULIA".equalsIgnoreCase((nomes.get(1))));
     }
 }
